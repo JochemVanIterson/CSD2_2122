@@ -16,3 +16,13 @@ def playAudioFile():
 
 
 playAudioFile()
+
+def playNTimes(amount):
+  for i in range(repeatAmount):
+    print("Playing audio file", i)
+    playAudioFile()
+
+repeatAmountStr = input("How many times should the audio file be repeated: ")
+repeatAmount = int(repeatAmountStr)
+
+playNTimes(repeatAmount)
