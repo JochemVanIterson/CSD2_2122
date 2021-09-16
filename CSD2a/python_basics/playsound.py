@@ -17,7 +17,7 @@ def playAudioFile():
 
 playAudioFile()
 
-def playNTimes(amount):
+def playNTimes(repeatAmount):
   for i in range(repeatAmount):
     print("Playing audio file", i)
     playAudioFile()
