@@ -10,12 +10,12 @@ soundKick = sa.WaveObject.from_wave_file("../assets/kick.wav")
 
 #### Functions
 
-def createEvent(timestamp, instrument, velocity):
+def createEvent(timestamp, sound, velocity):
     """Create a new event with easier arguments
 
     Args:
         timestamp (integer): Timestamp on which to play the event
-        instrument (string): Instrument to be played
+        sound (string): sound to be played
         velocity (integer): Velocity of the event (0 for off, non 0 for on)
 
     Returns:
@@ -23,7 +23,7 @@ def createEvent(timestamp, instrument, velocity):
     """
     return {
         'timestamp': timestamp,
-        'instrument': instrument,
+        'sound': sound,
         'velocity': velocity
     }
 
@@ -34,8 +34,8 @@ def execEvent(event):
         event (dict): Event to be played
     """
     
-    # Check if instrument is 'kick'
-    if event['instrument'] == 'kick':
+    # Check if sound is 'kick'
+    if event['sound'] == 'kick':
         # Check if velocity is higher than 0
         if event['velocity'] > 0:
             print("\nKick On", event['timestamp'])
@@ -58,6 +58,9 @@ numPlaybackTimes = int(numPlaybackTimesStr)
 # Create an empty list of size 'numPlaybackTimes'
 events = []
 
+timestampsKick = [500, 1000]
+timestampsSnare = [250, 750]
+
 # Provide user with expected syntax. Ask duration for every event and insert into an array
 print("\nEnter the duration of your notes with 1 as a quarter note, 0.5 as an 8e note, and so on.")
 currentTime = 0
@@ -73,7 +76,7 @@ for i in range(numPlaybackTimes):
 
 playableEvents = events.copy()
 startTimestamp = time.time_ns() # Work with ms
-while len(playableEvents) > 0:
+while True:
     # Get elapsed timestamp is ms, i.e. how much time has passed since last loop
     elapsedTimestamp = (time.time_ns() - startTimestamp) / 1000000.
 
