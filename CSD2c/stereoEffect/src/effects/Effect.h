@@ -1,5 +1,4 @@
-#ifndef _EFFECT_H_
-#define _EFFECT_H_
+#pragma once
 #include <iostream>
 #include "math.h"
 
@@ -8,16 +7,36 @@
 class Effect
 {
 public:
-    // Constructor and destructor
+    /**
+     * @brief Construct a new Effect object
+     * @param samplerate Samplerate of the effect
+     */
     Effect(unsigned long samplerate);
     virtual ~Effect();
 
+    /**
+     * @brief Function that calculates the effect sample. Also handles dry-wet ratio and bypass
+     *
+     * @param input Input value
+     * @return Output value
+     */
     float process(float input);
+    /**
+     * @brief Virtual function that does the actual modification
+     * 
+     * @param input Input value
+     * @return Output value
+     */
     virtual float applyEffect(float input) = 0;
 
     // getters and setters
-    // void setDryWetRatio(double drywetRatio);
-    // double getDryWetRatio();
+    /**
+     * @brief Set the Dry Wet Ratio
+     * 
+     * @param drywetRatio Must be between 0.0 and 1.0
+     */
+    void setDryWetRatio(double drywetRatio);
+    double getDryWetRatio();
     void setBypass(bool bypass);
     bool getBypass();
 
@@ -28,5 +47,3 @@ private:
     double drywetRatio = 1.0;
     bool bypass = false;
 };
-
-#endif

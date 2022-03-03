@@ -9,6 +9,7 @@
 #include "oscillators/voice.h"
 #include "effects/Effect.h"
 #include "effects/GainEffect.h"
+#include "effects/DelayEffect.h"
 
 JackModuleStereo jack;
 unsigned long samplerate = 44100; // default
@@ -17,27 +18,38 @@ unsigned long chunksize = 256;
 bool running = true;
 
 Voice* voice;
-Effect* effect;
+Effect* effectLeft;
+Effect* effectRight;
 
 double noteDuration = 200.0;
+std::string inputType = "mic";
 
 static void audioProcess() {
   float *inBuffer = new float[chunksize];
   float *outBuffer = new float[chunksize * 2];
 
   voice = new Voice(samplerate, "sine");
-  effect = new GainEffect(samplerate, 0.1);
+  effectLeft = new DelayEffect(samplerate, 500.0, 0.4);
+  effectRight = new DelayEffect(samplerate, 500.0, 0.4);
 
   do {
     jack.readSamples(inBuffer,chunksize);
     for(unsigned int i=0; i<chunksize; i++) {
       // write oscillator output --> to output buffer
-      outBuffer[i * 2] = voice -> getSample();
-      outBuffer[i * 2 + 1] = voice->getSample();
+      if (inputType == "osc") {
+        outBuffer[i * 2] = voice -> getSample();
+        outBuffer[i * 2 + 1] = voice -> getSample();
+      } else if (inputType == "mic") {
+        outBuffer[i * 2] = inBuffer[i];
+        outBuffer[i * 2 + 1] = inBuffer[i];
+      } else {
+        outBuffer[i * 2] = 0;
+        outBuffer[i * 2 + 1] = 0;
+      }
 
       // apply effect on left speaker
-      outBuffer[i * 2] = effect->process(outBuffer[i * 2]);
-      outBuffer[i * 2 + 1] = effect->process(outBuffer[i * 2 + 1]);
+      outBuffer[i * 2] = effectLeft->process(outBuffer[i * 2]);
+      outBuffer[i * 2 + 1] = effectRight->process(outBuffer[i * 2 + 1]);
 
       voice->tick();
     }
@@ -89,6 +101,12 @@ int main(int argc,char **argv){
       std::cout << "Setting oscillator to " << type << std::endl;
       voice->setType(type);
     }
+    else if (input.find("set input ") != std::string::npos)
+    {
+      std::string type = std::regex_replace(input, std::regex("set input "), "");
+      std::cout << "Setting input to " << type << std::endl;
+      inputType = type;
+    }
     else if (input.find("set duration ") != std::string::npos)
     {
       std::string stateString = std::regex_replace(input, std::regex("set duration "), "");
@@ -99,19 +117,21 @@ int main(int argc,char **argv){
       std::cout << "Setting duration to " << state << std::endl;
       noteDuration = state;
     }
-    else if (input.find("set gain ") != std::string::npos)
+    else if (input.find("set feedback ") != std::string::npos)
     {
-      std::string stateString = std::regex_replace(input, std::regex("set gain "), "");
+      std::string stateString = std::regex_replace(input, std::regex("set feedback "), "");
       float state = std::stof(stateString);
-      std::cout << "Setting gain to " << state << std::endl;
-      ((GainEffect *)effect)->setAmount(state);
+      std::cout << "Setting feedback to " << state << std::endl;
+      ((DelayEffect *)effectLeft)->setFeedback(state);
+      ((DelayEffect *)effectRight)->setFeedback(state);
     }
-    else if (input.find("bypass") != std::string::npos)
+    else if (input.find("set bypass") != std::string::npos)
     {
-      std::string stateString = std::regex_replace(input, std::regex("bypass "), "");
+      std::string stateString = std::regex_replace(input, std::regex("set bypass "), "");
       bool state = stateString == "on";
 
-      effect->setBypass(state);
+      effectLeft->setBypass(state);
+      effectRight->setBypass(state);
       std::cout << "Effect is " << (state ? "" : "not ") << "bypassed" << std::endl;
     }
     else if (input == "keymidi") {

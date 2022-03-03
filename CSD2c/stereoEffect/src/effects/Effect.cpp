@@ -14,6 +14,17 @@ float Effect::process(float input) {
     return wetSignal + drySignal;
 }
 
+void Effect::setDryWetRatio(double drywetRatio)
+{
+    if (drywetRatio < 0 || drywetRatio > 1.0) return;
+    this->drywetRatio = drywetRatio;
+}
+
+double Effect::getDryWetRatio()
+{
+    return this->drywetRatio;
+}
+
 void Effect::setBypass(bool bypass) {
     this->bypass = bypass;
 }
