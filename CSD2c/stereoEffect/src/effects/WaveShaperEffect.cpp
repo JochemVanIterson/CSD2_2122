@@ -30,6 +30,7 @@ void WaveShaperEffect::genShape(WaveshapeType type)
             float normalValue = (x - halfResolution) / halfResolution;
             buffer[x] = normalValue;
         }
+        BufferDebugger::writeToFile(buffer, WAVESHAPER_RESOLUTION, "output_lin.csv");
         break;
     }
     case WaveshapeType::ATAN:
@@ -42,13 +43,13 @@ void WaveShaperEffect::genShape(WaveshapeType type)
             float normalValue = (x - halfResolution) / halfResolution;
             buffer[x] = normalizeFactor * atan(amount * normalValue);
         }
+        BufferDebugger::writeToFile(buffer, WAVESHAPER_RESOLUTION, "output_atan.csv");
         break;
     }
     default:
         throw "WaveShaperEffect::WaveShaperEffect - incorrect WaveshapeType.";
         break;
     }
-    BufferDebugger::writeToFile(buffer, WAVESHAPER_RESOLUTION, "output.csv");
 }
 
 float WaveShaperEffect::linMap(float input, int x1, int x2, float min, float max)

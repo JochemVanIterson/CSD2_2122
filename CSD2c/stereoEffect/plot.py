@@ -2,11 +2,12 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import csv
+import sys
 
+filename = sys.argv[1] or 'output.csv'
 # create a list and import data from output.csv file
 data = list()
-# TODO - pass filepath as argument 
-with open('output.csv', 'r') as file:
+with open(filename, 'r') as file:
     reader = csv.reader(file)
     for row in reader:
         data.append(float(row[0]))
@@ -26,5 +27,5 @@ ax.set(xlabel='sample', ylabel='output',
 ax.grid()
 
 # To save the result, outcomment the line below:
-# fig.savefig("data_plot.png")
-plt.show()
+fig.savefig(filename.replace(".csv", ".png"))
+# plt.show()

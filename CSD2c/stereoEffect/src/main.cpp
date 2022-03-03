@@ -32,7 +32,25 @@ static void audioProcess() {
   float *outBuffer = new float[chunksize * 2];
 
   voice = new Voice(samplerate, "sine");
-  effectLeft = new WaveShaperEffect(samplerate, 10.0, WaveShaperEffect::WaveshapeType::ATAN);
+
+  // Effect Gain
+  effectLeft = new GainEffect(samplerate, 0.5);
+  effectRight = new GainEffect(samplerate, 0.5);
+  
+  // Effect Delay
+  // effectLeft = new DelayEffect(samplerate, 400, 0.5);
+  // effectRight = new DelayEffect(samplerate, 500, 0.5);
+
+  // Effect Tremolo
+  // effectLeft = new TremoloEffect(samplerate, 0.5, 20, TremoloEffect::WaveformType::SINE);
+  // effectRight = new TremoloEffect(samplerate, 0.5, 21, TremoloEffect::WaveformType::SINE);
+  
+  // Effect Chorus
+  // effectLeft = new ChorusEffect(samplerate, 100, 20);
+  // effectRight = new ChorusEffect(samplerate, 100, 21);
+
+  // Effect WaveShaper
+  effectLeft = new WaveShaperEffect(samplerate, 1.0, WaveShaperEffect::WaveshapeType::LINEAR);
   effectRight = new WaveShaperEffect(samplerate, 10.0, WaveShaperEffect::WaveshapeType::ATAN);
 
   effectLeft->setDryWetRatio(1.0);
