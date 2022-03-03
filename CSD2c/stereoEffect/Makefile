@@ -26,7 +26,8 @@ _OBJS = \
 	effects/Effect.o \
 	effects/GainEffect.o \
 	effects/DelayEffect.o \
-	effects/TremoloEffect.o
+	effects/TremoloEffect.o \
+	effects/ChorusEffect.o
 
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 

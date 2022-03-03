@@ -11,6 +11,7 @@
 #include "effects/GainEffect.h"
 #include "effects/DelayEffect.h"
 #include "effects/TremoloEffect.h"
+#include "effects/ChorusEffect.h"
 
 JackModuleStereo jack;
 unsigned long samplerate = 44100; // default
@@ -30,8 +31,8 @@ static void audioProcess() {
   float *outBuffer = new float[chunksize * 2];
 
   voice = new Voice(samplerate, "sine");
-  effectLeft = new TremoloEffect(samplerate, 0.5, 20, TremoloEffect::WaveformType::SINE);
-  effectRight = new TremoloEffect(samplerate, 0.5, 20, TremoloEffect::WaveformType::SINE);
+  effectLeft = new ChorusEffect(samplerate, 100, 20);
+  effectRight = new ChorusEffect(samplerate, 100, 20);
 
   effectLeft->setDryWetRatio(1.0);
   effectRight->setDryWetRatio(1.0);
