@@ -16,6 +16,8 @@ _OBJS = \
 	jack/jack_module_stereo.o \
 	tools/tools.o \
 	tools/circBuffer.o \
+	tools/writeToFile.o \
+	tools/bufferDebugger.o \
 	oscillators/voice.o \
 	oscillators/oscillator.o \
 	oscillators/waveforms/sine.o \
@@ -27,7 +29,8 @@ _OBJS = \
 	effects/GainEffect.o \
 	effects/DelayEffect.o \
 	effects/TremoloEffect.o \
-	effects/ChorusEffect.o
+	effects/ChorusEffect.o \
+	effects/WaveShaperEffect.o
 
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
