@@ -34,8 +34,8 @@ static void audioProcess() {
   voice = new Voice(samplerate, "sine");
 
   // Effect Gain
-  effectLeft = new GainEffect(samplerate, 0.5);
-  effectRight = new GainEffect(samplerate, 0.5);
+  // effectLeft = new GainEffect(samplerate, 0.5);
+  // effectRight = new GainEffect(samplerate, 0.5);
   
   // Effect Delay
   // effectLeft = new DelayEffect(samplerate, 400, 0.5);
