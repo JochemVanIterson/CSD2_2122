@@ -4,10 +4,7 @@
 
 #define PI_2 6.28318530717959
 #define WAVESHAPER_RESOLUTION 4096
-/**
- * @brief Basic effect that does nothing (ouput == input).
- *
- */
+
 class WaveShaperEffect : public Effect
 {
 public:
@@ -18,7 +15,7 @@ public:
         SIZE // 3
     };
     /**
-     * @brief Construct a new empty Effect
+     * @brief Construct a new WaveShaper Effect
      *
      * @param samplerate Samplerate of the project
      */

@@ -13,7 +13,7 @@ class ChorusEffect : public Effect
 {
 public:
     /**
-     * @brief Construct a new Delay Effect
+     * @brief Construct a new Chorus Effect
      * 
      * @param samplerate Samplerate of the project
      */
