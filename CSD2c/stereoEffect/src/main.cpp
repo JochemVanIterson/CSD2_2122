@@ -10,6 +10,7 @@
 #include "effects/Effect.h"
 #include "effects/GainEffect.h"
 #include "effects/DelayEffect.h"
+#include "effects/TremoloEffect.h"
 
 JackModuleStereo jack;
 unsigned long samplerate = 44100; // default
@@ -29,8 +30,11 @@ static void audioProcess() {
   float *outBuffer = new float[chunksize * 2];
 
   voice = new Voice(samplerate, "sine");
-  effectLeft = new DelayEffect(samplerate, 500.0, 0.4);
-  effectRight = new DelayEffect(samplerate, 500.0, 0.4);
+  effectLeft = new TremoloEffect(samplerate, 0.5, 20, TremoloEffect::WaveformType::SINE);
+  effectRight = new TremoloEffect(samplerate, 0.5, 20, TremoloEffect::WaveformType::SINE);
+
+  effectLeft->setDryWetRatio(1.0);
+  effectRight->setDryWetRatio(1.0);
 
   do {
     jack.readSamples(inBuffer,chunksize);
@@ -47,7 +51,7 @@ static void audioProcess() {
         outBuffer[i * 2 + 1] = 0;
       }
 
-      // apply effect on left speaker
+      // apply effect on output
       outBuffer[i * 2] = effectLeft->process(outBuffer[i * 2]);
       outBuffer[i * 2 + 1] = effectRight->process(outBuffer[i * 2 + 1]);
 

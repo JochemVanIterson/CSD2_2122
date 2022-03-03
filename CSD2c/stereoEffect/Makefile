@@ -25,7 +25,8 @@ _OBJS = \
 	oscillators/waveforms/fm_osc.o \
 	effects/Effect.o \
 	effects/GainEffect.o \
-	effects/DelayEffect.o
+	effects/DelayEffect.o \
+	effects/TremoloEffect.o
 
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
