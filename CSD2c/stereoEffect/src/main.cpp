@@ -19,10 +19,21 @@ unsigned long samplerate = 44100; // default
 unsigned long chunksize = 256;
 
 bool running = true;
+enum EffectType {
+  EMPTY,
+  CHORUS,
+  DELAY,
+  GAIN,
+  TREMOLO,
+  WAVESHAPER,
+  SIZE
+};
 
 Voice* voice;
 Effect* effectLeft;
 Effect* effectRight;
+
+EffectType currentEffect = EffectType::EMPTY;
 
 double noteDuration = 200.0;
 std::string inputType = "mic";
@@ -32,29 +43,6 @@ static void audioProcess() {
   float *outBuffer = new float[chunksize * 2];
 
   voice = new Voice(samplerate, "sine");
-
-  // Effect Gain
-  // effectLeft = new GainEffect(samplerate, 0.5);
-  // effectRight = new GainEffect(samplerate, 0.5);
-  
-  // Effect Delay
-  effectLeft = new DelayEffect(samplerate, 400, 0.5);
-  effectRight = new DelayEffect(samplerate, 500, 0.5);
-
-  // Effect Tremolo
-  // effectLeft = new TremoloEffect(samplerate, 0.5, 20, TremoloEffect::WaveformType::SINE);
-  // effectRight = new TremoloEffect(samplerate, 0.5, 21, TremoloEffect::WaveformType::SINE);
-  
-  // Effect Chorus
-  // effectLeft = new ChorusEffect(samplerate, 100, 20);
-  // effectRight = new ChorusEffect(samplerate, 100, 21);
-
-  // Effect WaveShaper
-  // effectLeft = new WaveShaperEffect(samplerate, 1.0, WaveShaperEffect::WaveshapeType::LINEAR);
-  // effectRight = new WaveShaperEffect(samplerate, 10.0, WaveShaperEffect::WaveshapeType::ATAN);
-
-  effectLeft->setParameter("dryWet", std::to_string(0.5));
-  effectRight->setParameter("dryWet", std::to_string(0.5));
 
   do {
     jack.readSamples(inBuffer,chunksize);
@@ -72,14 +60,67 @@ static void audioProcess() {
       }
 
       // apply effect on output
-      outBuffer[i * 2] = effectLeft->process(outBuffer[i * 2]);
-      outBuffer[i * 2 + 1] = effectRight->process(outBuffer[i * 2 + 1]);
+      if (effectLeft != nullptr && effectRight != nullptr) {
+        outBuffer[i * 2] = effectLeft->process(outBuffer[i * 2]);
+        outBuffer[i * 2 + 1] = effectRight->process(outBuffer[i * 2 + 1]);
+      }
 
       voice->tick();
     }
 
     jack.writeSamples(outBuffer,chunksize*2);
   } while(running);
+}
+
+void insertEffect(EffectType type) {
+  if (currentEffect == type) return;
+  currentEffect = type;
+
+  delete effectLeft;
+  delete effectRight;
+  effectLeft = nullptr;
+  effectRight = nullptr;
+
+  switch (type) {
+  case EffectType::EMPTY:
+  {
+    break;
+  }
+  case EffectType::CHORUS:
+  {
+    effectLeft = new ChorusEffect(samplerate, 100, 20);
+    effectRight = new ChorusEffect(samplerate, 100, 21);
+    break;
+  }
+  case EffectType::DELAY:
+  {
+    effectLeft = new DelayEffect(samplerate, 400, 0.5);
+    effectRight = new DelayEffect(samplerate, 500, 0.5);
+    break;
+  }
+  case EffectType::GAIN:
+  {
+    effectLeft = new GainEffect(samplerate, 0.5);
+    effectRight = new GainEffect(samplerate, 0.5);
+    break;
+  }
+  case EffectType::TREMOLO:
+  {
+    effectLeft = new TremoloEffect(samplerate, 0.5, 20, TremoloEffect::WaveformType::SINE);
+    effectRight = new TremoloEffect(samplerate, 0.5, 21, TremoloEffect::WaveformType::SINE);
+    break;
+  }
+  case EffectType::WAVESHAPER:
+  {
+    effectLeft = new WaveShaperEffect(samplerate, 1.0, WaveShaperEffect::WaveshapeType::LINEAR);
+    effectRight = new WaveShaperEffect(samplerate, 10.0, WaveShaperEffect::WaveshapeType::ATAN);
+    break;
+  }
+
+  default:
+    throw "Incorrect Effect";
+    break;
+  }
 }
 
 /*
@@ -141,9 +182,20 @@ int main(int argc,char **argv){
       std::cout << "Setting duration to " << state << std::endl;
       noteDuration = state;
     }
-    else if (input.find("effect ") != std::string::npos)
+    else if (input.find("insertEffect ") != std::string::npos)
     {
-      std::string strippedString = std::regex_replace(input, std::regex("effect "), "");
+      std::string strippedString = std::regex_replace(input, std::regex("insertEffect "), "");
+      if (strippedString == "chorus") insertEffect(EffectType::CHORUS);
+      else if (strippedString == "delay") insertEffect(EffectType::DELAY);
+      else if (strippedString == "gain") insertEffect(EffectType::GAIN);
+      else if (strippedString == "tremolo") insertEffect(EffectType::TREMOLO);
+      else if (strippedString == "waveshaper") insertEffect(EffectType::WAVESHAPER);
+      else insertEffect(EffectType::EMPTY);
+
+    }
+    else if (input.find("parameter ") != std::string::npos)
+    {
+      std::string strippedString = std::regex_replace(input, std::regex("parameter "), "");
       if (strippedString.find(' ') == std::string::npos) {
         std::cerr << "No value provided" << std::endl;
         continue;
