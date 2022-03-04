@@ -21,6 +21,17 @@ float ChorusEffect::applyEffect(float input)
 
     return newSample;
 }
-unsigned long ChorusEffect::ms2samples(double ms) {
+
+void ChorusEffect::setParameter(std::string key, std::string value) {
+    if (false/*key == "amount"*/) {
+        // setAmount(std::stof(value));
+    }
+    else {
+        setBaseParameter(key, value);
+    }
+}
+
+unsigned long ChorusEffect::ms2samples(double ms)
+{
     return (samplerate / 1000.0) * ms;
 }

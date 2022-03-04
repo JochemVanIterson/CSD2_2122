@@ -27,6 +27,7 @@ public:
      * @return Output sample
      */
     float applyEffect(float input) override;
+    void setParameter(std::string key, std::string value) override;
 
 private:
     CircBuffer buffer;
@@ -39,7 +40,6 @@ private:
      * @param ms Input in miliseconds
      * @return output in samples
      */
-    unsigned long
-    ms2samples(double ms);
+    unsigned long ms2samples(double ms);
 };
 

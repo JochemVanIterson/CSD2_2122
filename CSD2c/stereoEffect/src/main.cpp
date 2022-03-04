@@ -38,8 +38,8 @@ static void audioProcess() {
   // effectRight = new GainEffect(samplerate, 0.5);
   
   // Effect Delay
-  // effectLeft = new DelayEffect(samplerate, 400, 0.5);
-  // effectRight = new DelayEffect(samplerate, 500, 0.5);
+  effectLeft = new DelayEffect(samplerate, 400, 0.5);
+  effectRight = new DelayEffect(samplerate, 500, 0.5);
 
   // Effect Tremolo
   // effectLeft = new TremoloEffect(samplerate, 0.5, 20, TremoloEffect::WaveformType::SINE);
@@ -50,11 +50,11 @@ static void audioProcess() {
   // effectRight = new ChorusEffect(samplerate, 100, 21);
 
   // Effect WaveShaper
-  effectLeft = new WaveShaperEffect(samplerate, 1.0, WaveShaperEffect::WaveshapeType::LINEAR);
-  effectRight = new WaveShaperEffect(samplerate, 10.0, WaveShaperEffect::WaveshapeType::ATAN);
+  // effectLeft = new WaveShaperEffect(samplerate, 1.0, WaveShaperEffect::WaveshapeType::LINEAR);
+  // effectRight = new WaveShaperEffect(samplerate, 10.0, WaveShaperEffect::WaveshapeType::ATAN);
 
-  effectLeft->setDryWetRatio(1.0);
-  effectRight->setDryWetRatio(1.0);
+  effectLeft->setParameter("dryWet", std::to_string(0.5));
+  effectRight->setParameter("dryWet", std::to_string(0.5));
 
   do {
     jack.readSamples(inBuffer,chunksize);
@@ -119,21 +119,21 @@ int main(int argc,char **argv){
     if (input == "quit" || input == "q" || input == "exit") running = false;
     else if(input=="transpose down") keyOctave--;
     else if (input == "transpose up") keyOctave++;
-    else if (input.find("set oscillator ") != std::string::npos)
+    else if (input.find("oscillator ") != std::string::npos)
     {
-      std::string type = std::regex_replace(input, std::regex("set oscillator "), "");
+      std::string type = std::regex_replace(input, std::regex("oscillator "), "");
       std::cout << "Setting oscillator to " << type << std::endl;
       voice->setType(type);
     }
-    else if (input.find("set input ") != std::string::npos)
+    else if (input.find("input ") != std::string::npos)
     {
-      std::string type = std::regex_replace(input, std::regex("set input "), "");
+      std::string type = std::regex_replace(input, std::regex("input "), "");
       std::cout << "Setting input to " << type << std::endl;
       inputType = type;
     }
-    else if (input.find("set duration ") != std::string::npos)
+    else if (input.find("duration ") != std::string::npos)
     {
-      std::string stateString = std::regex_replace(input, std::regex("set duration "), "");
+      std::string stateString = std::regex_replace(input, std::regex("duration "), "");
       if (stateString == "inf") {
         stateString = "0.0";
       }
@@ -141,22 +141,28 @@ int main(int argc,char **argv){
       std::cout << "Setting duration to " << state << std::endl;
       noteDuration = state;
     }
-    else if (input.find("set feedback ") != std::string::npos)
+    else if (input.find("effect ") != std::string::npos)
     {
-      std::string stateString = std::regex_replace(input, std::regex("set feedback "), "");
-      float state = std::stof(stateString);
-      std::cout << "Setting feedback to " << state << std::endl;
-      ((DelayEffect *)effectLeft)->setFeedback(state);
-      ((DelayEffect *)effectRight)->setFeedback(state);
-    }
-    else if (input.find("set bypass") != std::string::npos)
-    {
-      std::string stateString = std::regex_replace(input, std::regex("set bypass "), "");
-      bool state = stateString == "on";
-
-      effectLeft->setBypass(state);
-      effectRight->setBypass(state);
-      std::cout << "Effect is " << (state ? "" : "not ") << "bypassed" << std::endl;
+      std::string strippedString = std::regex_replace(input, std::regex("effect "), "");
+      if (strippedString.find(' ') == std::string::npos) {
+        std::cerr << "No value provided" << std::endl;
+        continue;
+      }
+      std::string key = strippedString.substr(0, strippedString.find(' '));
+      std::string value = strippedString.substr(strippedString.find(' '), strippedString.length());
+      std::cout << "Set Effect parameter '" << key << "' to value " << value << std::endl;
+      try {
+        effectLeft->setParameter(key, value);
+        effectRight->setParameter(key, value);
+      }
+      catch (char const* errorMessage) {
+        std::cerr << "An error ocurred while setting parameter '" << key << "' to value " << value << std::endl;
+        std::cerr << "  Message: " << errorMessage << std::endl;
+      }
+      catch (std::string errorMessage) {
+        std::cerr << "An error ocurred while setting parameter '" << key << "' to value " << value << std::endl;
+        std::cerr << "  Message: " << errorMessage << std::endl;
+      }
     }
     else if (input == "keymidi") {
       std::cout << "Enabling key midi. Exit by typing 'q'" << std::endl;

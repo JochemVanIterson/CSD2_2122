@@ -17,12 +17,28 @@ float DelayEffect::applyEffect(float input)
 
     return newSample;
 }
+
+void DelayEffect::setParameter(std::string key, std::string value) {
+    if (key == "delaytime")
+    {
+        setDelayTime(std::stod(value));
+    }
+    else if (key == "feedback")
+    {
+        setFeedback(std::stof(value));
+    }
+    else
+    {
+        setBaseParameter(key, value);
+    }
+}
+
 unsigned long DelayEffect::ms2samples(double ms) {
     return (samplerate / 1000.0) * ms;
 }
 
 void DelayEffect::setDelayTime(double delayTime) {
-    if (delayTime < 0) return;
+    if (delayTime < 0) throw "Value out of bounds (0 - inf.)";
     this->delayTime = delayTime;
     buffer.resetSize(ms2samples(delayTime) + 1);
     buffer.setDistanceRW(ms2samples(delayTime));
@@ -31,7 +47,7 @@ double DelayEffect::getDelayTime() {
     return delayTime;
 }
 void DelayEffect::setFeedback(double feedback) {
-    if (feedback < 0.0 || feedback > 1.0) return;
+    if (feedback < 0.0 || feedback > 1.0) throw "Value out of bounds (0 - 1)";
     this->feedback = feedback;
 }
 double DelayEffect::getFeedback() {

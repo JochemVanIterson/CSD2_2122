@@ -3,7 +3,7 @@
 WaveShaperEffect::WaveShaperEffect(unsigned long samplerate, float amount, WaveshapeType shape) : Effect(samplerate),
                                                                                                   amount(amount)
 {
-    genShape(shape);
+    setShape(shape);
 }
 
 WaveShaperEffect::~WaveShaperEffect() {}
@@ -18,7 +18,20 @@ float WaveShaperEffect::applyEffect(float input)
     return outputValue;
 }
 
-void WaveShaperEffect::genShape(WaveshapeType type)
+void WaveShaperEffect::setParameter(std::string key, std::string value)
+{
+    if (key == "shape") {
+        if (value == "linear") setShape(WaveshapeType::LINEAR);
+        else if (value == "atan") setShape(WaveshapeType::ATAN);
+        else throw "Unknown shape";
+    }
+    else
+    {
+        setBaseParameter(key, value);
+    }
+}
+
+void WaveShaperEffect::setShape(WaveshapeType type)
 {
     switch (type)
     {

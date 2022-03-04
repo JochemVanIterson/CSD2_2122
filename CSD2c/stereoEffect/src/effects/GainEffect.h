@@ -27,6 +27,8 @@ public:
      */
     float applyEffect(float input) override;
 
+    void setParameter(std::string key, std::string value) override;
+
     /**
      * @brief Set the gain amount (must be between 0 and 1)
      * 

@@ -14,9 +14,22 @@ float Effect::process(float input) {
     return wetSignal + drySignal;
 }
 
+void Effect::setBaseParameter(std::string key, std::string value) {
+    if (key == "dryWet") {
+        setDryWetRatio(std::stof(value));
+    }
+    else if (key == "bypass") {
+        setBypass(value == "on");
+    }
+    else {
+        std::string message = "Unknown parameter: " + key;
+        throw message;
+    }
+}
+
 void Effect::setDryWetRatio(double drywetRatio)
 {
-    if (drywetRatio < 0 || drywetRatio > 1.0) return;
+    if (drywetRatio < 0 || drywetRatio > 1.0) throw "Value out of bounds (0 - 1)";
     this->drywetRatio = drywetRatio;
 }
 

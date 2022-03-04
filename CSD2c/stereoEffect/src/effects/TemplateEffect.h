@@ -25,6 +25,7 @@ public:
      * @return Output sample
      */
     float applyEffect(float input) override;
+    void setParameter(std::string key, std::string value) override;
 
 private:
 };

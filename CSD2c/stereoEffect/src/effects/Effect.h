@@ -29,6 +29,9 @@ public:
      */
     virtual float applyEffect(float input) = 0;
 
+    virtual void setParameter(std::string key, std::string value) = 0;
+    void setBaseParameter(std::string key, std::string value);
+
     // getters and setters
     /**
      * @brief Set the Dry Wet Ratio

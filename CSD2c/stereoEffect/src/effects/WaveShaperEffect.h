@@ -29,11 +29,13 @@ public:
      * @return Output sample
      */
     float applyEffect(float input) override;
+    void setParameter(std::string key, std::string value) override;
+
+    void setShape(WaveshapeType type);
 
 private:
     float amount = 1;
     float buffer[WAVESHAPER_RESOLUTION];
-    void genShape(WaveshapeType type);
 
     float linMap(float input, int x1, int x2, float min, float max);
 };
